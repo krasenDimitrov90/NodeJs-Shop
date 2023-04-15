@@ -23,8 +23,13 @@ module.exports.getAllProducts = (req, res, next) => {
 
 module.exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
-    console.log(productId);
-    res.redirect('/');
+    Product.findProduct(productId, product => {
+        res.render('shop/product-details', {
+            product: product,
+            path: '/products',
+            pageTitle: product.title
+        });
+    });
 };
 
 
