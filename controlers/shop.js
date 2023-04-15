@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 
 module.exports.getIndex = (req, res, next) => {
@@ -39,6 +40,14 @@ module.exports.getCart = (req, res, next) => {
         path: '/cart',
     });
 }
+
+module.exports.postCart = (req, res, next) => {
+    const productId = req.body.productId;
+    Product.findProduct(productId, (product) => {
+        Cart.addProduct(productId, product.price);
+    });
+    res.redirect('/cart');
+};
 
 module.exports.getOrders = (req, res, next) => {
     res.render('shop/orders', {
