@@ -7,6 +7,17 @@ module.exports.getAddProduct = (req, res, next) => {
     });
 };
 
+module.exports.getEditProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    Product.findProduct(prodId, (product) => {
+        res.render('admin/edit-product', {
+            pageTitle: 'Edit Product',
+            path: '/admin/edit-product',
+            product: product,
+        });
+    });
+};
+
 module.exports.getProducts = (req, res, next) => {
     Product.fetchAll(products => {
         res.render('admin/products', {
@@ -25,4 +36,8 @@ module.exports.postAddProduct = (req, res, next) => {
     const product = new Product(title,imageUrl,description,price);
     product.save();
     res.redirect('/');
+};
+
+module.exports.postEditProduct = (req, res, next) => {
+    
 };
