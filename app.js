@@ -10,17 +10,16 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const pageNotFoundControler = require('./controlers/404');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', adminData.routes);
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-app.use((req, res, next) => {
-    res.status(404).render('404', {pageTitle: 'Not found'});
-});
+app.use(pageNotFoundControler);
 
 app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
