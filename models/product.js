@@ -7,14 +7,13 @@ module.exports = class Product {
         this.price = Number(price);
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = new mongodb.ObjectId(id);
+        this._id = id ? new mongodb.ObjectId(id) : null;
     }
 
     save() {
         const db = getDb();
         let dbOperation;
         if (this._id) {
-            console.log(new mongodb.ObjectId(undefined), 'HERE');
             dbOperation = db.collection('products')
                 .updateOne({ _id: this._id }, { $set: this });
         } else {
