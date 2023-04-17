@@ -19,13 +19,17 @@ module.exports.getEditProduct = (req, res, next) => {
 };
 
 module.exports.getProducts = (req, res, next) => {
-    Product.fetchAll(products => {
-        res.render('admin/products', {
-            pageTitle: 'Admin Products',
-            path: '/admin/products',
-            prods: products,
-        });
-    });
+    Product.fetchAll()
+        .then(products => {
+            res.render('admin/products', {
+                pageTitle: 'Admin Products',
+                path: '/admin/products',
+                prods: products,
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 

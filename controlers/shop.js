@@ -3,13 +3,14 @@ const Cart = require('../models/cart');
 
 
 module.exports.getIndex = (req, res, next) => {
-    Product.fetchAll(products => {
-        res.render('shop/index', {
-            pageTitle: 'Shop',
-            path: '/',
-            prods: products,
-        });
-    });
+    Product.fetchAll()
+        .then(products => {
+            res.render('shop/index', {
+                pageTitle: 'Shop',
+                path: '/',
+                prods: products,
+            });
+        })
 }
 
 module.exports.getAllProducts = (req, res, next) => {
@@ -39,7 +40,7 @@ module.exports.getCart = (req, res, next) => {
         Product.fetchAll(products => {
             const cartProducts = [];
             if (cart) {
-                console.log({cart});
+                console.log({ cart });
                 allIds = cart.products.map(p => p.id);
                 products.reduce((acc, p) => {
                     if (allIds.includes(p.id)) {
