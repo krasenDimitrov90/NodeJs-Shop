@@ -1,3 +1,6 @@
+const mongodb = require('mongodb');
+const ObjectId = mongodb.ObjectId;
+
 const Product = require('../models/product');
 
 module.exports.getAddProduct = (req, res, next) => {
@@ -9,13 +12,14 @@ module.exports.getAddProduct = (req, res, next) => {
 
 module.exports.getEditProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.findProduct(prodId, (product) => {
-        res.render('admin/edit-product', {
-            pageTitle: 'Edit Product',
-            path: '/admin/edit-product',
-            product: product,
-        });
-    });
+    Product.findById(prodId)
+        .then((product) => {
+            res.render('admin/edit-product', {
+                pageTitle: 'Edit Product',
+                path: '/admin/edit-product',
+                product: product,
+            });
+        })
 };
 
 module.exports.getProducts = (req, res, next) => {
@@ -58,9 +62,11 @@ module.exports.postEditProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(prodId, title, imageUrl, description, price);
-    product.save();
-    res.redirect('/');
+    const product = new Product(title, price, description, imageUrl, new ObjectId(prodId));
+    product.save()
+        .then(result => {
+            res.redirect('/');
+        })
 };
 
 module.exports.postDeleteProduct = (req, res, next) => {
