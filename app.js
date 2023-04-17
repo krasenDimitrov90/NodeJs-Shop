@@ -3,6 +3,8 @@ const port = 3000;
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const mongoConnect = require('./util/database').mongoConnect;
+
 
 const app = express();
 
@@ -22,4 +24,6 @@ app.use(shopRoutes);
 
 app.use(pageNotFoundControler);
 
-app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
+mongoConnect(() => {
+    app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
+});
