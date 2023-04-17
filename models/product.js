@@ -7,17 +7,16 @@ module.exports = class Product {
         this.price = Number(price);
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id;
+        this._id = new mongodb.ObjectId(id);
     }
 
     save() {
         const db = getDb();
         let dbOperation;
         if (this._id) {
-            console.log(this._id);
-            console.log(new mongodb.ObjectId(this._id));
+            console.log(new mongodb.ObjectId(undefined), 'HERE');
             dbOperation = db.collection('products')
-                .updateOne({_id: new mongodb.ObjectId(this._id)}, {$set: this});
+                .updateOne({ _id: this._id }, { $set: this });
         } else {
             dbOperation = db.collection('products').insertOne(this);
         }
@@ -57,5 +56,11 @@ module.exports = class Product {
                 console.log(err);
                 throw err;
             });
+    }
+
+    static deleteById(prodId) {
+        const db = getDb();
+        return db.collection('products')
+            .deleteOne({ _id: new mongodb.ObjectId(prodId) });
     }
 }

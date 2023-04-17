@@ -1,6 +1,3 @@
-const mongodb = require('mongodb');
-const ObjectId = mongodb.ObjectId;
-
 const Product = require('../models/product');
 
 module.exports.getAddProduct = (req, res, next) => {
@@ -48,7 +45,7 @@ module.exports.postAddProduct = (req, res, next) => {
     product.save()
         .then(result => {
             console.log('Created');
-            res.redirect('/admin/add-product');
+            res.redirect('/');
         })
         .catch(err => {
             console.log(err);
@@ -62,7 +59,7 @@ module.exports.postEditProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(title, price, description, imageUrl, new ObjectId(prodId));
+    const product = new Product(title, price, description, imageUrl, prodId);
     product.save()
         .then(result => {
             res.redirect('/');
@@ -71,6 +68,12 @@ module.exports.postEditProduct = (req, res, next) => {
 
 module.exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.deleteById(prodId);
-    res.redirect('/admin/products');
+    Product.deleteById(prodId)
+        .then(result => {
+            console.log(result);
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
