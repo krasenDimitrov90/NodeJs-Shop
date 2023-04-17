@@ -14,24 +14,32 @@ module.exports.getIndex = (req, res, next) => {
 }
 
 module.exports.getAllProducts = (req, res, next) => {
-    Product.fetchAll(products => {
-        res.render('shop/products-list', {
-            pageTitle: 'All Products',
-            path: '/products',
-            prods: products,
-        });
-    });
+    Product.fetchAll()
+        .then(products => {
+            res.render('shop/products-list', {
+                pageTitle: 'All Products',
+                path: '/products',
+                prods: products,
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 module.exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findProduct(productId, product => {
-        res.render('shop/product-details', {
-            product: product,
-            path: '/products',
-            pageTitle: product.title
-        });
-    });
+    Product.findById(productId)
+        .then(product => {
+            res.render('shop/product-details', {
+                product: product,
+                path: '/products',
+                pageTitle: product.title
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
 };
 
 
