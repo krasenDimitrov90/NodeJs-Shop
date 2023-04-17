@@ -35,15 +35,34 @@ module.exports.getProduct = (req, res, next) => {
 
 
 module.exports.getCart = (req, res, next) => {
-    res.render('shop/cart', {
-        pageTitle: 'Cart',
-        path: '/cart',
+    Cart.getCart(cart => {
+        Product.fetchAll(products => {
+            const cartProducts = [];
+            if (cart) {
+                console.log({cart});
+                allIds = cart.products.map(p => p.id);
+                products.reduce((acc, p) => {
+                    if (allIds.includes(p.id)) {
+                        const qty = cart.products.find(prod => prod.id === p.id).qty;
+                        acc.push({ productData: p, qty: qty });
+                    }
+                    return acc
+                }, cartProducts);
+            }
+
+            res.render('shop/cart', {
+                pageTitle: 'Cart',
+                path: '/cart',
+                products: cartProducts,
+            });
+        });
     });
+
 }
 
 module.exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
-    console.log({productId});
+    console.log({ productId });
 
     Product.findProduct(productId, (product) => {
         Cart.addProduct(productId, product.price);
