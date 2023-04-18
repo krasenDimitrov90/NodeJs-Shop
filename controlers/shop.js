@@ -68,10 +68,14 @@ module.exports.postCart = (req, res, next) => {
 };
 
 module.exports.getOrders = (req, res, next) => {
-    res.render('shop/orders', {
-        pageTitle: 'Orders',
-        path: '/orders',
-    });
+    req.user.getOrders()
+        .then(orders => {
+            res.render('shop/orders', {
+                pageTitle: 'Orders',
+                path: '/orders',
+                orders: orders,
+            });
+        })
 }
 
 module.exports.getCheckout = (req, res, next) => {
