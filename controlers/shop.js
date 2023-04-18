@@ -95,7 +95,7 @@ module.exports.postCartDeleteProduct = (req, res, next) => {
 module.exports.postOrder = (req, res, next) => {
     req.user.addOrder()
         .then(result => {
-            redirect('/cart');
+            res.redirect('/cart');
         })
         .catch(err => {
             console.log(err);
