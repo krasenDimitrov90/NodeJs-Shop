@@ -91,3 +91,13 @@ module.exports.postCartDeleteProduct = (req, res, next) => {
             console.log(err);
         })
 };
+
+module.exports.postOrder = (req, res, next) => {
+    req.user.addOrder()
+        .then(result => {
+            redirect('/cart');
+        })
+        .catch(err => {
+            console.log(err);
+        })
+};
