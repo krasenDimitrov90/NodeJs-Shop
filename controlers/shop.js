@@ -83,8 +83,11 @@ module.exports.getCheckout = (req, res, next) => {
 
 module.exports.postCartDeleteProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findProduct(productId, (product) => {
-        Cart.deleteProduct(productId, product.price);
-        res.redirect('/cart');
-    });
+    req.user.deleteItemFromCart(productId)
+        .then(result => {
+            res.redirect('/cart');
+        })
+        .catch(err => {
+            console.log(err);
+        })
 };

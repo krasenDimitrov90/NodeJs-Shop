@@ -61,6 +61,19 @@ module.exports = class User {
             })
     }
 
+    deleteItemFromCart(productId) {
+        const updatedItems = this.cart.items.filter(i => {
+            return i.productId.toString() !== productId.toString()
+        });
+
+        const db = getDb();
+        return db.collection('users')
+            .updateOne(
+                { _id: new ObjectId(this._id) },
+                { $set: { cart: { items: updatedItems } } }
+            )
+    }
+
     static findById(userId) {
         const db = getDb();
         return db.collection('users')
