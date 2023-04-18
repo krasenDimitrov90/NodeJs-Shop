@@ -71,12 +71,14 @@ module.exports.getCart = (req, res, next) => {
 
 module.exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
-    console.log({ productId });
-
-    Product.findProduct(productId, (product) => {
-        Cart.addProduct(productId, product.price);
-    });
-    res.redirect('/cart');
+    Product.findById(productId)
+        .then((product) => {
+            return req.user.addToCart(product);
+        })
+        .then(result => {
+            console.log(result);
+            res.redirect('/');
+        })
 };
 
 module.exports.getOrders = (req, res, next) => {
