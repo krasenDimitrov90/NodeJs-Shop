@@ -44,24 +44,15 @@ userSchema.methods.addToCart = function (product) { // Must NOT be an Arrow func
     return this.save();
 }
 
-userSchema.methods.getCart = function () {
-    const productIds = this.cart.items.map(p => p.productId.toString());
-    console.log({ productIds })
+userSchema.methods.removeFromCart = function (productId) {
+    const updatedItems = this.cart.items.filter(i => {
+        return i.productId.toString() !== productId.toString()
+    });
 
-    return Product.find()
-        .then(products => {
-            console.log(products)
-            return products.filter(p => productIds.includes(p._id.toString()))
-                .map(p => {
-                    return {
-                        ...p,
-                        quantity: this.cart.items.find(i => {
-                            return i.productId.toString() === p._id.toString();
-                        }).quantity
-                    }
-                })
-        })
+    this.cart.items = updatedItems;
+    return this.save();
 }
+
 
 module.exports = mongoose.model('User', userSchema);
 
