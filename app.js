@@ -3,7 +3,8 @@ const port = 3000;
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const mongoConnect = require('./util/database').mongoConnect;
+const mongoose = require('mongoose');
+// const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 
@@ -34,6 +35,14 @@ app.use(shopRoutes);
 
 app.use(pageNotFoundControler);
 
-mongoConnect(() => {
-    app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
-});
+// mongoConnect(() => {
+//     app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
+// });
+
+mongoose.connect('mongodb+srv://krasendimitrov:n176S6m05sosLrZb@product-app-udemy.znr3hub.mongodb.net/shop?retryWrites=true&w=majority')
+    .then(result => {
+        app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
+    })
+    .catch(err => {
+        console.log(err);
+    });
