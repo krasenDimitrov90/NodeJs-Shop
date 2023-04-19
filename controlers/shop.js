@@ -2,7 +2,7 @@ const Product = require('../models/product');
 
 
 module.exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
+    Product.find() // find is a mongoose method
         .then(products => {
             res.render('shop/index', {
                 pageTitle: 'Shop',
@@ -13,7 +13,7 @@ module.exports.getIndex = (req, res, next) => {
 }
 
 module.exports.getAllProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find() // find is a mongoose method
         .then(products => {
             res.render('shop/products-list', {
                 pageTitle: 'All Products',
@@ -28,8 +28,9 @@ module.exports.getAllProducts = (req, res, next) => {
 
 module.exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findById(productId)
+    Product.findById(productId) // findById is mongoose method that auto converts id to new ObjectId
         .then(product => {
+            console.log(product);
             res.render('shop/product-details', {
                 product: product,
                 path: '/products',
