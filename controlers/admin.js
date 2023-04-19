@@ -46,6 +46,7 @@ module.exports.postAddProduct = (req, res, next) => {
         price: price,
         description: description,
         imageUrl: imageUrl,
+        userId: req.user._id
     });
     product.save() // save comes from mongoose
         .then(result => {
