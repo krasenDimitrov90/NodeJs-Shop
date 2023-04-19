@@ -20,7 +20,7 @@ module.exports.getEditProduct = (req, res, next) => {
 };
 
 module.exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('admin/products', {
                 pageTitle: 'Admin Products',
@@ -41,7 +41,7 @@ module.exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product({ 
+    const product = new Product({
         title: title,
         price: price,
         description: description,
@@ -64,8 +64,16 @@ module.exports.postEditProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(title, price, description, imageUrl, prodId);
-    product.save()
+    // const product = new Product(title, price, description, imageUrl, prodId);
+    Product.findById(prodId) // findById is method from mongoose
+        .then(p => {
+            p.title = title;
+            p.imageUrl = imageUrl;
+            p.description = description;
+            p.price = price;
+
+            return p.save(); // save is method from mongoose
+        })
         .then(result => {
             res.redirect('/');
         })
