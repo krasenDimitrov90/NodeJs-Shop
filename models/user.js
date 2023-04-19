@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const Product = require('./product');
+
 const userSchema = new Schema({
     name: {
         type: String,
@@ -19,6 +21,47 @@ const userSchema = new Schema({
         ]
     }
 });
+
+userSchema.methods.addToCart = function (product) { // Must NOT be an Arrow function
+    const cartProductIndex = this.cart.items.findIndex(cp => {
+        return cp.productId.toString() === product._id.toString();
+    });
+
+    let newQuantity = 1;
+    let updatedCartItems = [...this.cart.items];
+    if (cartProductIndex >= 0) {
+        newQuantity += updatedCartItems[cartProductIndex].quantity;
+        updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+        updatedCartItems.push({
+            productId: product._id,
+            quantity: newQuantity
+        });
+    }
+
+    const updatedCart = { items: updatedCartItems };
+    this.cart = updatedCart;
+    return this.save();
+}
+
+userSchema.methods.getCart = function () {
+    const productIds = this.cart.items.map(p => p.productId.toString());
+    console.log({ productIds })
+
+    return Product.find()
+        .then(products => {
+            console.log(products)
+            return products.filter(p => productIds.includes(p._id.toString()))
+                .map(p => {
+                    return {
+                        ...p,
+                        quantity: this.cart.items.find(i => {
+                            return i.productId.toString() === p._id.toString();
+                        }).quantity
+                    }
+                })
+        })
+}
 
 module.exports = mongoose.model('User', userSchema);
 

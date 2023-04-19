@@ -72,7 +72,8 @@ module.exports.postEditProduct = (req, res, next) => {
             p.imageUrl = imageUrl;
             p.description = description;
             p.price = price;
-
+            p.userId = req.user._id;
+            
             return p.save(); // save is method from mongoose
         })
         .then(result => {
