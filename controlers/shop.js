@@ -47,26 +47,11 @@ module.exports.getProduct = (req, res, next) => {
 module.exports.getCart = (req, res, next) => {
     req.user.populate('cart.items.productId')
         .then(user => {
-            const products = user.cart.items.map(i => {
-                return {
-                    quantity: i.quantity, product: { ...i.productId._doc }
-                }
-            })
-
-            console.log(products)
-
-            const order = new Order({
-                user: {
-                    name: req.user.name,
-                    userId: req.user
-                },
-                products: products
+            res.render('shop/cart', {
+                pageTitle: 'Cart',
+                path: '/cart',
+                products: user.cart.items,
             });
-
-            return order.save();
-        })
-        .then(result => {
-            res.redirect('/orders');
         })
 
 }
@@ -114,10 +99,23 @@ module.exports.postCartDeleteProduct = (req, res, next) => {
 
 module.exports.postOrder = (req, res, next) => {
     req.user.populate('cart.items.productId')
-        .then(result => {
-            res.redirect('/cart');
+    .then(user => {
+        const products = user.cart.items.map(i => {
+            return {
+                quantity: i.quantity, product: { ...i.productId._doc }
+            }
         })
-        .catch(err => {
-            console.log(err);
-        })
+
+        const order = new Order({
+            user: {
+                name: req.user.name,
+                userId: req.user
+            },
+            products: products
+        });
+
+        return order.save();
+    })
+    .then(result => req.user.clearCart())
+    .then(() => res.redirect('/orders'))
 };
