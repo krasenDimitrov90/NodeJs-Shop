@@ -2,6 +2,7 @@ const path = require('path');
 const port = 3000;
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 
 const mongoose = require('mongoose');
 
@@ -21,6 +22,9 @@ const pageNotFoundControler = require('./controlers/404');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+    session({secret: 'my secret', resave: false, saveUninitialized: false})
+);
 
 app.use((req, res, next) => {
     User.findById('6440206ade342937864e52a8')

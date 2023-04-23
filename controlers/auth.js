@@ -1,13 +1,13 @@
 module.exports.getLogin = (req, res, next) => {
-    const isLoggedin = req.get('Cookie').trim().split('=')[1];
+    console.log(req.session.isAuthenticated);
     res.render('auth/login', {
         pageTitle: 'Login',
         path: '/login',
-        isAuthenticated: isLoggedin,
+        isAuthenticated: false,
     });
 };
 
 module.exports.postLogin = (req, res, next) => {
-    res.setHeader('Set-Cookie', 'loggin=true');
+    req.session.isAuthenticated = true;
     res.redirect('/');
 };
