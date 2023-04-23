@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 
 const User = require('./models/user');
 
-const MONOGODB_URI = 'mongodb+srv://krasendimitrov:n176S6m05sosLrZb@product-app-udemy.znr3hub.mongodb.net/shop?retryWrites=true&w=majority'
+const MONOGODB_URI = 'mongodb+srv://krasendimitrov:n176S6m05sosLrZb@product-app-udemy.znr3hub.mongodb.net/shop?retryWrites=true&w=majority';
 
 const app = express();
 const store = new MongoDBStore({
@@ -29,8 +29,26 @@ const pageNotFoundControler = require('./controlers/404');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
-    session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store })
+    session({
+        secret: 'my secret',
+        resave: false,
+        saveUninitialized: false,
+        store: store
+    })
 );
+
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user)
+        .then(user => {
+            req.user = user;
+            req.isAuthenticated = true;
+            next();
+        })
+        .catch(err => console.log(err));
+});
 
 
 app.use('/admin', adminRoutes);

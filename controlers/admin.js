@@ -4,7 +4,7 @@ module.exports.getAddProduct = (req, res, next) => {
     res.render('admin/add-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        isAuthenticated: req.session.isAuthenticated,
+        isAuthenticated: req.isAuthenticated,
     });
 };
 
@@ -16,7 +16,7 @@ module.exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product',
                 product: product,
-                isAuthenticated: req.session.isAuthenticated,
+                isAuthenticated: req.isAuthenticated,
             });
         })
 };
@@ -28,7 +28,7 @@ module.exports.getProducts = (req, res, next) => {
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
                 prods: products,
-                isAuthenticated: req.session.isAuthenticated,
+                isAuthenticated: req.isAuthenticated,
             });
         })
         .catch(err => {
@@ -49,7 +49,7 @@ module.exports.postAddProduct = (req, res, next) => {
         price: price,
         description: description,
         imageUrl: imageUrl,
-        userId: req.session.user._id
+        userId: req.user._id
     });
     product.save() // save comes from mongoose
         .then(result => {
