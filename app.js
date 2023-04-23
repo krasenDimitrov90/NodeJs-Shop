@@ -3,13 +3,19 @@ const port = 3000;
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const mongoose = require('mongoose');
 
 const User = require('./models/user');
 
+const MONOGODB_URI = 'mongodb+srv://krasendimitrov:n176S6m05sosLrZb@product-app-udemy.znr3hub.mongodb.net/shop?retryWrites=true&w=majority'
 
 const app = express();
+const store = new MongoDBStore({
+    uri: MONOGODB_URI,
+    collection: 'sessions',
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -23,7 +29,7 @@ const pageNotFoundControler = require('./controlers/404');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
-    session({secret: 'my secret', resave: false, saveUninitialized: false})
+    session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store })
 );
 
 app.use((req, res, next) => {
@@ -42,7 +48,7 @@ app.use(authRoutes);
 app.use(pageNotFoundControler);
 
 
-mongoose.connect('mongodb+srv://krasendimitrov:n176S6m05sosLrZb@product-app-udemy.znr3hub.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(MONOGODB_URI)
     .then(result => {
         User.findOne()
             .then(user => {
