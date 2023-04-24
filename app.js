@@ -60,21 +60,6 @@ app.use(pageNotFoundControler);
 
 mongoose.connect(MONOGODB_URI)
     .then(result => {
-        User.findOne()
-            .then(user => {
-                if (!user) {
-                    const user = new User({
-                        name: 'Kras',
-                        email: 'kras@test.com',
-                        cart: {
-                            items: []
-                        }
-                    });
-                    user.save();
-                }
-            })
-
-
         app.listen(port, () => console.log(`Server is running on visit on http://localhost:${port}`));
     })
     .catch(err => {
