@@ -1,25 +1,27 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
+const Order = require('../models/order');
 
 
 module.exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
+    Product.find() // find is a mongoose method
         .then(products => {
             res.render('shop/index', {
                 pageTitle: 'Shop',
                 path: '/',
                 prods: products,
+                isAuthenticated: req.isAuthenticated,
             });
         })
 }
 
 module.exports.getAllProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find() // find is a mongoose method
         .then(products => {
             res.render('shop/products-list', {
                 pageTitle: 'All Products',
                 path: '/products',
                 prods: products,
+                isAuthenticated: req.isAuthenticated,
             });
         })
         .catch(err => {
@@ -29,12 +31,13 @@ module.exports.getAllProducts = (req, res, next) => {
 
 module.exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findById(productId)
+    Product.findById(productId) // findById is mongoose method that auto converts id to new ObjectId
         .then(product => {
             res.render('shop/product-details', {
                 product: product,
                 path: '/products',
-                pageTitle: product.title
+                pageTitle: product.title,
+                isAuthenticated: req.isAuthenticated,
             });
         })
         .catch(err => {
@@ -44,12 +47,13 @@ module.exports.getProduct = (req, res, next) => {
 
 
 module.exports.getCart = (req, res, next) => {
-    req.user.getCart()
-        .then(products => {
+    req.user.populate('cart.items.productId')
+        .then(user => {
             res.render('shop/cart', {
                 pageTitle: 'Cart',
                 path: '/cart',
-                products: products,
+                products: user.cart.items,
+                isAuthenticated: req.isAuthenticated,
             });
         })
 
@@ -62,18 +66,18 @@ module.exports.postCart = (req, res, next) => {
             return req.user.addToCart(product);
         })
         .then(result => {
-            console.log(result);
             res.redirect('/');
         })
 };
 
 module.exports.getOrders = (req, res, next) => {
-    req.user.getOrders()
+    Order.find({ 'user.userId': req.user._id })
         .then(orders => {
             res.render('shop/orders', {
                 pageTitle: 'Orders',
                 path: '/orders',
                 orders: orders,
+                isAuthenticated: req.isAuthenticated,
             });
         })
 }
@@ -82,12 +86,13 @@ module.exports.getCheckout = (req, res, next) => {
     res.render('shop/checkout', {
         pageTitle: 'Checkout',
         path: '/checkout',
+        isAuthenticated: req.isAuthenticated,
     });
 }
 
 module.exports.postCartDeleteProduct = (req, res, next) => {
     const productId = req.params.productId;
-    req.user.deleteItemFromCart(productId)
+    req.user.removeFromCart(productId)
         .then(result => {
             res.redirect('/cart');
         })
@@ -97,11 +102,24 @@ module.exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 module.exports.postOrder = (req, res, next) => {
-    req.user.addOrder()
-        .then(result => {
-            res.redirect('/cart');
+    req.user.populate('cart.items.productId')
+        .then(user => {
+            const products = user.cart.items.map(i => {
+                return {
+                    quantity: i.quantity, product: { ...i.productId._doc }
+                }
+            })
+
+            const order = new Order({
+                user: {
+                    email: req.user.email,
+                    userId: req.user
+                },
+                products: products
+            });
+
+            return order.save();
         })
-        .catch(err => {
-            console.log(err);
-        })
+        .then(result => req.user.clearCart())
+        .then(() => res.redirect('/orders'))
 };
