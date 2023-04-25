@@ -3,7 +3,6 @@ const Order = require('../models/order');
 
 
 module.exports.getIndex = (req, res, next) => {
-    console.log('Get Index = ', req.isLoggedin);
     Product.find() // find is a mongoose method
         .then(products => {
             res.render('shop/index', {
@@ -34,7 +33,6 @@ module.exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
     Product.findById(productId) // findById is mongoose method that auto converts id to new ObjectId
         .then(product => {
-            console.log(product);
             res.render('shop/product-details', {
                 product: product,
                 path: '/products',
@@ -68,7 +66,6 @@ module.exports.postCart = (req, res, next) => {
             return req.user.addToCart(product);
         })
         .then(result => {
-            console.log(result);
             res.redirect('/');
         })
 };
@@ -115,7 +112,7 @@ module.exports.postOrder = (req, res, next) => {
 
             const order = new Order({
                 user: {
-                    name: req.user.name,
+                    email: req.user.email,
                     userId: req.user
                 },
                 products: products
